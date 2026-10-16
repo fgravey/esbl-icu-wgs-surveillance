@@ -23,7 +23,7 @@ authors:
     given-names: Olivier
   - family-names: Le Hello
     given-names: Simon
-repository-code: "https://github.com/YOUR_USERNAME/esbl-icu-wgs-surveillance"
+repository-code: "https://github.com/fgravey/esbl-icu-wgs-surveillance"
 abstract: "Complete R analysis pipeline of a 5-year prospective weekly genomic surveillance program of ESBL-producing Enterobacterales in intensive care units: cohort curation, cgSNP-based transmission linkage, resistome analysis, colonization-pressure modelling, Cox and logistic regression, and all publication figures and tables."
 keywords:
   - ESBL

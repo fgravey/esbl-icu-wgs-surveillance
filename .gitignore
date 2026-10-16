@@ -1,0 +1,20 @@
+# Analysis outputs
+output/
+
+# Intermediate cohort files (contain protected patient data)
+data/*.tsv
+data/*.xlsx
+data/*.csv
+
+# R
+.Rhistory
+.Rapp.history
+.RData
+.Ruserdata
+.Rproj.user/
+*.Rproj
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp

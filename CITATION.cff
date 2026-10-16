@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the article and this repository."
+title: "Prospective Weekly Genomic Surveillance alerted and controlled Nosocomial Transmission Chains of ESBL-Producing Enterobacterales in Intensive Care Units: A 5-Year Longitudinal Study"
+type: software
+authors:
+  - family-names: Gravey
+    given-names: Francois
+  - family-names: Jeanne-Leroyer
+    given-names: Camille
+  - family-names: Bernachot
+    given-names: Coraline
+  - family-names: Le Neindre
+    given-names: Killian
+  - family-names: Isnard
+    given-names: Christophe
+  - family-names: Gakuba
+    given-names: Clement
+  - family-names: Du Cheyron
+    given-names: Damien
+  - family-names: Thibon
+    given-names: Pascal
+  - family-names: Join-Lambert
+    given-names: Olivier
+  - family-names: Le Hello
+    given-names: Simon
+repository-code: "https://github.com/YOUR_USERNAME/esbl-icu-wgs-surveillance"
+abstract: "Complete R analysis pipeline of a 5-year prospective weekly genomic surveillance program of ESBL-producing Enterobacterales in intensive care units: cohort curation, cgSNP-based transmission linkage, resistome analysis, colonization-pressure modelling, Cox and logistic regression, and all publication figures and tables."
+keywords:
+  - ESBL
+  - Enterobacterales
+  - genomic surveillance
+  - intensive care unit
+  - nosocomial transmission
+  - antimicrobial resistance
+license: MIT

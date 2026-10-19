@@ -6,7 +6,7 @@ This repository contains the complete, reproducible R analysis pipeline for:
 
 François Gravey, Camille Jeanne-Leroyer, Coraline Bernachot, Killian Le Neindre, Christophe Isnard, Clément Gakuba, Damien Du Cheyron, Pascal Thibon, Olivier Join-Lambert, Simon Le Hello.
 
-The pipeline covers a 5-year (2019–2023) prospective genomic surveillance program of ESBL-producing *Enterobacterales* (ESBL-E) in three intensive care units (ICUs) of a French university hospital, combining weekly systematic rectal screening, whole-genome sequencing (WGS), core-genome SNP typing, and longitudinal epidemiological modelling.
+The pipeline covers a 5-year (2019–2023) prospective genomic surveillance program of ESBL-producing *Enterobacterales* (ESBL-E) in two intensive care units (ICUs) of a French university hospital, combining weekly systematic rectal screening, whole-genome sequencing (WGS), core-genome SNP typing, and longitudinal epidemiological modelling.
 
 ## Repository structure
 
@@ -15,7 +15,7 @@ The pipeline covers a 5-year (2019–2023) prospective genomic surveillance prog
 ├── README.md
 ├── LICENSE
 ├── CITATION.cff
-├── scripts/          # 17 numbered R scripts (run in order)
+├── scripts/          # 18 numbered R scripts (run in order)
 │   └── *.R
 ├── data/             # Input files (see data/README.md)
 └── output/           # Generated figures and tables (created automatically)
@@ -45,13 +45,14 @@ setwd("<path/to/repository>")
 source("scripts/01_cohort_deduplication.R")
 source("scripts/02_genomic_transmission_linkage.R")
 # ... and so on up to script 17
+# 09b runs after 09 (before 10)
 ```
 
 All figures (PDF/PNG/TIFF) and tables (CSV/XLSX) are written to `output/figures/` and `output/tables/`. Intermediate cohort files produced by scripts 01–02 are written back into `data/` and consumed by all downstream scripts.
 
 ## Script description
 
-| # | Script | Purpose | Main outputs |
+| Order | Script | Purpose | Main outputs |
 |---|--------|---------|--------------|
 | 01 | `01_cohort_deduplication.R` | Strict epidemiological de-duplication of the ICU cohort: only the earliest isolate per patient/stay/species/ST combination is retained. | `data/BLSE_cohort_curated_clean.tsv` |
 | 02 | `02_genomic_transmission_linkage.R` | Defines intra-ward genomic cross-transmission events based on cgSNP clusters and a rolling ≤ 30-day window (nearest temporal neighbour). | `data/BLSE_cohort_final_with_transmissions.tsv` |
@@ -62,6 +63,7 @@ All figures (PDF/PNG/TIFF) and tables (CSV/XLSX) are written to `output/figures/
 | 07 | `07_table2_and_figure2.R` | Table 2 (longitudinal incidence trends, rates, IRR — requires the admission numerators file) and full Figure 2. | `output/tables/Table_2_*.csv`, `output/figures/Figure_2_*.pdf` |
 | 08 | `08_figure3_tipping_points_cox.R` | Figure 3: empirical ROC curves & Youden thresholds, step-function odds ratios above colonization-pressure thresholds, and the multivariable Cox forest plot. | `output/figures/Figure_3_*.pdf` |
 | 09 | `09_supplementary_table_s5_colonization_pressure_roc.R` | Ward colonization pressure computation, stratified ROC curves with bootstrap-validated AUC, Youden inflection thresholds, step-function ORs with Fisher fallback (Table S5; panels 3A/3B). | `output/tables/Supplementary_Table_S5_*.csv` |
+| 09b | `09b_threshold_internal_validation.R` | Internal validation of the colonisation-pressure transmission threshold, addressing the absence of post-2021 transmission events that precludes temporal validation: (a) bootstrap stability of the Youden threshold (2000 replicates per ICU), (b) cross-ward validation (threshold derived in one ICU, applied to the other; AUC, sensitivity, specificity, OR), and (c) optimism-corrected AUC (1000 repeated 50/50 split-sample analyses). Accepts the curated surveillance table (`BLSE_Reanimation_WGS_cross_transmission_curated_2026-09-18.tsv`) and applies the same de-duplication rule as script 01 (earliest isolate per patient/stay/species/ST), yielding the 689-episode analysis cohort. | `output/tables/Supplementary_Table_S5b_Threshold_Validation.csv` |
 | 10 | `10_cox_transmission_velocity_pairs.R` | Pairwise transmission network reconstruction and multivariable Cox model of acute cross-transmission velocity (≤ 30 days); Figure 3C forest plot. | `output/figures/Figure_3C_*.pdf`, `output/tables/Table_Cox_*.csv` |
 | 11 | `11_supplementary_tables_s4_clonal_dynamics.R` | Supplementary Tables S4a–S4d: global clonal profile summary, persistent/endemic lineages (≥ 4 years), emerging lineages, disappeared lineages. | `output/tables/Supplementary_Table_S4*.csv/.xlsx` |
 | 12 | `12_supplementary_table_s6_secondary_conversions.R` | Secondary conversion rates (infection after documented positive screening) and anatomical breakdown of conversion events (Table S6, conversion panel). | `output/tables/Supplementary_Table_S6_Secondary_Conversions.csv` |

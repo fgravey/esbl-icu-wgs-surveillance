@@ -5,9 +5,9 @@
 # Script: 10_cox_transmission_velocity_pairs.R
 # Purpose: Pairwise transmission network reconstruction, multivariable Cox
 #          proportional hazards modeling of acute cross-transmission velocity
-#          (<= 30 days), and publication-grade Forest Plot (Figure 3C).
+#          (<= 30 days), and publication-grade Forest Plot (Figure 2C).
 # Input :  data/BLSE_cohort_final_with_transmissions.tsv
-# Output:  output/figures/Figure_3C_Cox_Forest.pdf (.png)
+# Output:  output/figures/Figure_2C_Cox_Forest.pdf (.png)
 #          output/tables/Table_Cox_Proportional_Hazards.csv
 # Author:  Francois Gravey and co-authors (see README.md)
 # ==============================================================================
@@ -167,7 +167,7 @@ max_upper_cox <- max(df_forest$Upper, na.rm = TRUE)
 lim_x_cox     <- max(3.0, ceiling(max_upper_cox * 1.25))
 
 # ------------------------------------------------------------------------------
-# 4. FOREST PLOT RENDERING (PANEL 3C)
+# 4. FOREST PLOT RENDERING (PANEL 2C)
 # ------------------------------------------------------------------------------
 cox_labels_expr <- c(
   "Medical ICU vs Surgical ICU"  = "Medical ICU\nvs Surgical ICU",
@@ -176,7 +176,7 @@ cox_labels_expr <- c(
   "Escherichia coli (Reference)" = expression(italic("E. coli")~"(Reference)")
 )
 
-p3C <- ggplot(df_forest, aes(x = aHR, y = Covariate)) +
+p2C <- ggplot(df_forest, aes(x = aHR, y = Covariate)) +
   geom_vline(xintercept = 1, linetype = "dashed", color = "grey50") +
   geom_errorbarh(
     data = filter(df_forest, !IsRef),
@@ -202,10 +202,10 @@ p3C <- ggplot(df_forest, aes(x = aHR, y = Covariate)) +
   )
 
 # Final exports
-ggsave(file.path(out_dir_fig, "Figure_3C_Cox_Forest.pdf"), p3C, width = 10.0, height = 4.5, dpi = 300)
-ggsave(file.path(out_dir_fig, "Figure_3C_Cox_Forest.png"), p3C, width = 10.0, height = 4.5, dpi = 300)
+ggsave(file.path(out_dir_fig, "Figure_2C_Cox_Forest.pdf"), p2C, width = 10.0, height = 4.5, dpi = 300)
+ggsave(file.path(out_dir_fig, "Figure_2C_Cox_Forest.png"), p2C, width = 10.0, height = 4.5, dpi = 300)
 
 write_csv(df_forest %>% select(-IsRef), file.path(out_dir_tab, "Table_Cox_Proportional_Hazards.csv"))
 
-cat(sprintf("\n--> Figure 3C exported to: %s\n", out_dir_fig))
+cat(sprintf("\n--> Figure 2C exported to: %s\n", out_dir_fig))
 cat(sprintf("--> Cox model table exported to: %s\n", out_dir_tab))

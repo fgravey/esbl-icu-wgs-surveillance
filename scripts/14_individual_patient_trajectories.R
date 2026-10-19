@@ -115,7 +115,7 @@ df_indiv <- df %>%
 cat(sprintf("--> Complete individual cohort available for analysis: %d patients\n", nrow(df_indiv)))
 
 # ------------------------------------------------------------------------------
-# 2. HOSPITAL DELAYS AND NON-PARAMETRIC TESTS (FIG 1B LEGACY)
+# 2. HOSPITAL DELAYS AND NON-PARAMETRIC TESTS (FIG 1A / SUPPL. FIG S2 LEGACY)
 # ------------------------------------------------------------------------------
 cat("\n=== 1. DISTRIBUTION OF ACQUISITION DELAYS BY SPECIES (DAYS) ===\n")
 synthese_delais <- df_indiv %>%
@@ -138,7 +138,7 @@ kw_test <- kruskal.test(los_days ~ Species_factor, data = df_indiv)
 cat(sprintf("Kruskal-Wallis p-value: %.4e\n", kw_test$p.value))
 
 # ------------------------------------------------------------------------------
-# 3. TEXT-MINING OF ANATOMICAL INFECTION SITES (FIG 4C / TABLE S6 LEGACY)
+# 3. TEXT-MINING OF ANATOMICAL INFECTION SITES (FIG 3C LEGACY)
 # ------------------------------------------------------------------------------
 cat("\n=== 2. DETAILED BREAKDOWN OF ANATOMICAL INFECTION SITES ===\n")
 df_sites_infectieux <- df_indiv %>%

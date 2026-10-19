@@ -2,12 +2,12 @@
 # Study : Prospective Weekly Genomic Surveillance alerted and controlled
 #         Nosocomial Transmission Chains of ESBL-Producing Enterobacterales
 #         in Intensive Care Units: A 5-Year Longitudinal Study
-# Script: 12_supplementary_table_s6_secondary_conversions.R
+# Script: 12_supplementary_table_s3_secondary_conversions.R
 # Purpose: Dynamic calculation of secondary conversion rates (true secondary
 #          infection after a documented positive screening) and their
-#          anatomical breakdown (Supplementary Table S6, conversion panel).
+#          anatomical breakdown (Supplementary Table S3, conversion panel).
 # Input :  data/BLSE_cohort_final_with_transmissions.tsv
-# Output:  output/tables/Supplementary_Table_S6_Secondary_Conversions.csv
+# Output:  output/tables/Supplementary_Table_S3_Secondary_Conversions.csv
 # Author:  Francois Gravey and co-authors (see README.md)
 # ==============================================================================
 
@@ -129,12 +129,12 @@ tab_sites_conv <- df_conv_sites %>%
   )
 
 # ------------------------------------------------------------------------------
-# 3. COMPILATION OF THE REVISED TABLE S6
+# 3. COMPILATION OF THE REVISED TABLE S3
 # ------------------------------------------------------------------------------
 res_table <- tab_sites_conv %>%
   select(Species, Site, Cell_Label) %>%
   pivot_wider(names_from = Species, values_from = Cell_Label) %>%
   arrange(match(Site, sites_order))
 
-write_csv(res_table, file.path(out_dir_tab, "Supplementary_Table_S6_Secondary_Conversions.csv"))
-cat(sprintf("\n--> Table S6 exported to: %s\n", out_dir_tab))
+write_csv(res_table, file.path(out_dir_tab, "Supplementary_Table_S3_Secondary_Conversions.csv"))
+cat(sprintf("\n--> Table S3 exported to: %s\n", out_dir_tab))

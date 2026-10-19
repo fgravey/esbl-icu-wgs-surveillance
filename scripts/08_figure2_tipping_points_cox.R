@@ -2,15 +2,15 @@
 # Study : Prospective Weekly Genomic Surveillance alerted and controlled
 #         Nosocomial Transmission Chains of ESBL-Producing Enterobacterales
 #         in Intensive Care Units: A 5-Year Longitudinal Study
-# Script: 08_figure3_tipping_points_cox.R
-# Purpose: Dynamic generation of Figure 3 (three panels):
-#          - 3A: Empirical ROC curves and Youden inflection thresholds of
+# Script: 08_figure2_tipping_points_cox.R
+# Purpose: Dynamic generation of Figure 2 (three panels):
+#          - 2A: Empirical ROC curves and Youden inflection thresholds of
 #                ward colonization pressure
-#          - 3B: Step-function odds ratios upon exceeding pressure thresholds
-#          - 3C: Multivariable Cox proportional hazards model of
+#          - 2B: Step-function odds ratios upon exceeding pressure thresholds
+#          - 2C: Multivariable Cox proportional hazards model of
 #                cross-transmission velocity (forest plot)
 # Input :  data/BLSE_cohort_final_with_transmissions.tsv
-# Output:  output/figures/Figure_3_Tipping_Points_Cox.pdf (.png, .tiff)
+# Output:  output/figures/Figure_2_Tipping_Points_Cox.pdf (.png, .tiff)
 # ==============================================================================
 
 suppressPackageStartupMessages({
@@ -53,7 +53,7 @@ df_prep <- df %>%
   filter(!is.na(ward_clean) & !is.na(cp_num))
 
 # ------------------------------------------------------------------------------
-# 1. PANEL 3A: ROC ANALYSIS AND YOUDEN THRESHOLDS
+# 1. PANEL 2A: ROC ANALYSIS AND YOUDEN THRESHOLDS
 # ------------------------------------------------------------------------------
 calc_roc_data <- function(sub_df, unit_name) {
   roc_obj <- roc(sub_df$is_trans, sub_df$cp_num, quiet = TRUE, direction = "<")
@@ -91,7 +91,7 @@ sicu_label_text <- sprintf("\u2022 SICU: >= %.1f cases/wk (Sens: %.1f%%, Spec: %
 micu_label_text <- sprintf("\u2022 MICU: >= %.1f cases/wk (Sens: %.1f%%, Spec: %.1f%%)",
                            roc_micu$point$Threshold, roc_micu$point$Sens, roc_micu$point$Spec)
 
-p3A <- ggplot(df_roc_plot, aes(x = FPR, y = TPR, color = Unit)) +
+p2A <- ggplot(df_roc_plot, aes(x = FPR, y = TPR, color = Unit)) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey60") +
   geom_line(linewidth = 1.2) +
   geom_point(data = df_pts_plot, aes(x = FPR, y = TPR, color = Unit), size = 3.5, shape = 19) +
@@ -120,7 +120,7 @@ p3A <- ggplot(df_roc_plot, aes(x = FPR, y = TPR, color = Unit)) +
   )
 
 # ------------------------------------------------------------------------------
-# 2. PANEL 3B: STEP-FUNCTION ODDS RATIOS (LOGISTIC REGRESSION)
+# 2. PANEL 2B: STEP-FUNCTION ODDS RATIOS (LOGISTIC REGRESSION)
 # ------------------------------------------------------------------------------
 calc_or <- function(sub_df, thresh, label) {
   dat  <- sub_df %>% mutate(over = ifelse(cp_num >= thresh, 1, 0))
@@ -140,7 +140,7 @@ df_threshold_or <- bind_rows(
 ) %>%
   mutate(Param = factor(Param, levels = Param))
 
-p3B <- ggplot(df_threshold_or, aes(x = OR, y = Param, color = Param)) +
+p2B <- ggplot(df_threshold_or, aes(x = OR, y = Param, color = Param)) +
   geom_vline(xintercept = 1, linetype = "dashed", color = "grey50") +
   geom_errorbarh(aes(xmin = Lower, xmax = Upper), height = 0.25, linewidth = 0.9) +
   geom_point(size = 3.8, shape = 18) +
@@ -165,7 +165,7 @@ p3B <- ggplot(df_threshold_or, aes(x = OR, y = Param, color = Param)) +
   )
 
 # ------------------------------------------------------------------------------
-# 3. PANEL 3C: MULTIVARIABLE COX MODEL (TRANSMISSION VELOCITY)
+# 3. PANEL 2C: MULTIVARIABLE COX MODEL (TRANSMISSION VELOCITY)
 # ------------------------------------------------------------------------------
 df_trans_net <- df_prep %>%
   filter(is_trans == 1) %>%
@@ -223,7 +223,7 @@ cox_labels_expr <- c(
   "Escherichia coli (Reference)" = expression(italic("E. coli")~"(Reference)")
 )
 
-p3C <- ggplot(df_cox, aes(x = aHR, y = Variable)) +
+p2C <- ggplot(df_cox, aes(x = aHR, y = Variable)) +
   geom_vline(xintercept = 1, linetype = "dashed", color = "grey50") +
   geom_errorbarh(data = filter(df_cox, !IsRef), aes(xmin = Lower, xmax = Upper),
                  height = 0.22, linewidth = 0.85, color = "#084594") +
@@ -248,11 +248,11 @@ p3C <- ggplot(df_cox, aes(x = aHR, y = Variable)) +
 # ------------------------------------------------------------------------------
 # 4. ASSEMBLY AND EXPORT
 # ------------------------------------------------------------------------------
-fig3_complete <- ((p3A | p3B) / p3C + plot_layout(heights = c(1, 1.1))) &
+fig2_complete <- ((p2A | p2B) / p2C + plot_layout(heights = c(1, 1.1))) &
   theme(plot.margin = margin(t = 10, r = 15, b = 10, l = 20, unit = "pt"))
 
-ggsave(file.path(out_dir_fig, "Figure_3_Tipping_Points_Cox.pdf"), fig3_complete, width = 12.5, height = 9.5, dpi = 300)
-ggsave(file.path(out_dir_fig, "Figure_3_Tipping_Points_Cox.png"), fig3_complete, width = 12.5, height = 9.5, dpi = 300)
-ggsave(file.path(out_dir_fig, "Figure_3_Tipping_Points_Cox.tiff"), fig3_complete, width = 12.5, height = 9.5, dpi = 300, compression = "lzw")
+ggsave(file.path(out_dir_fig, "Figure_2_Tipping_Points_Cox.pdf"), fig2_complete, width = 12.5, height = 9.5, dpi = 300)
+ggsave(file.path(out_dir_fig, "Figure_2_Tipping_Points_Cox.png"), fig2_complete, width = 12.5, height = 9.5, dpi = 300)
+ggsave(file.path(out_dir_fig, "Figure_2_Tipping_Points_Cox.tiff"), fig2_complete, width = 12.5, height = 9.5, dpi = 300, compression = "lzw")
 
-cat("--> Figure 3 regenerated successfully in:", out_dir_fig, "\n")
+cat("--> Figure 2 regenerated successfully in:", out_dir_fig, "\n")

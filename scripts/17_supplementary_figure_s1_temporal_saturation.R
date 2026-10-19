@@ -12,7 +12,7 @@
 #            14-, 21-, 30- and 60-day rolling windows
 # Input :  data/BLSE_cohort_final_with_transmissions.tsv
 # Output:  output/figures/Supplementary_Figure_S1_Temporal_Saturation.pdf (.png)
-#          output/tables/Supplementary_Table_S1_Sensitivity.csv
+#          output/tables/Source_Data_Figure_S1B_Window_Sensitivity.csv
 # ==============================================================================
 
 suppressPackageStartupMessages({
@@ -229,7 +229,7 @@ fig_s1 <- p_s1A / p_s1B + plot_layout(heights = c(1, 1))
 
 ggsave(file.path(out_dir_fig, "Supplementary_Figure_S1_Temporal_Saturation.pdf"), fig_s1, width = 8.5, height = 9.5, dpi = 300)
 ggsave(file.path(out_dir_fig, "Supplementary_Figure_S1_Temporal_Saturation.png"), fig_s1, width = 8.5, height = 9.5, dpi = 300)
-write.csv(sens_table, file.path(out_dir_tab, "Supplementary_Table_S1_Sensitivity.csv"), row.names = FALSE)
+write.csv(sens_table, file.path(out_dir_tab, "Source_Data_Figure_S1B_Window_Sensitivity.csv"), row.names = FALSE)
 
 cat(sprintf("\n--> Supplementary Figure S1 exported to: %s\n", out_dir_fig))
-cat(sprintf("--> Supplementary Table S1 exported to: %s\n", out_dir_tab))
+cat(sprintf("--> Source data (Supplementary Figure S1B) exported to: %s\n", out_dir_tab))

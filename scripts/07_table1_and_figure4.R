@@ -2,16 +2,16 @@
 # Study : Prospective Weekly Genomic Surveillance alerted and controlled
 #         Nosocomial Transmission Chains of ESBL-Producing Enterobacterales
 #         in Intensive Care Units: A 5-Year Longitudinal Study
-# Script: 07_table2_and_figure2.R
-# Purpose: Dynamic recalculation of Table 2 (longitudinal incidence trends and
+# Script: 07_table1_and_figure4.R
+# Purpose: Dynamic recalculation of Table 1 (longitudinal incidence trends and
 #          annual IRRs, 2019-2023, using hospital activity denominators) and
-#          full generation of Figure 2 (panels 2A, 2B, 2C). The consolidated
-#          Table 2 is additionally exported to a multi-sheet Excel workbook.
+#          full generation of Figure 4 (panels 4A, 4B, 4C). The consolidated
+#          Table 1 is additionally exported to a multi-sheet Excel workbook.
 # Input :  data/BLSE_cohort_final_with_transmissions.tsv
 #          data/JH_admission_rea_2019_2023.xlsx  (patient-days and admissions)
-# Output:  output/figures/Figure_2_Longitudinal_Dynamics.pdf (.png, .tiff)
-#          output/tables/Table_2_Longitudinal_Trends_and_IRR.csv
-#          output/tables/Table_2_Consolidated.xlsx
+# Output:  output/figures/Figure_4_Longitudinal_Dynamics.pdf (.png, .tiff)
+#          output/tables/Table_1_Longitudinal_Trends_and_IRR.csv
+#          output/tables/Table_1_Consolidated.xlsx
 # ==============================================================================
 
 suppressPackageStartupMessages({
@@ -145,7 +145,7 @@ compute_metric_row <- function(label, filter_cond, denom_col = "patient_days",
   c(Metric = label, vals_yr, IRR = irr_str, p = pval_str)
 }
 
-table2_raw <- list(
+table1_raw <- list(
   c(Metric = "Exposure Denominators - Patient-Days",
     setNames(format(denom_annuel$patient_days, big.mark = " "), paste0("yr_", denom_annuel$year)),
     IRR = "\u2014", p = "\u2014"),
@@ -175,28 +175,28 @@ table2_raw <- list(
 
   # Internal negative control (community importations / 1,000 admissions).
   # Standard Poisson is used here for exact consistency with the historical
-  # Figure 2C (p = 0.0069).
+  # Figure 4C (p = 0.0069).
   compute_metric_row("Community Importations - Escherichia coli (Negative Control)",
                      "is_imported == 1 & Taxon_clean == 'Escherichia coli'",
                      denom_col = "admissions", scale = 1000, model_type = "poisson")
 )
 
-final_table2 <- bind_rows(lapply(table2_raw, as.data.frame.list, stringsAsFactors = FALSE)) %>%
+final_table1 <- bind_rows(lapply(table1_raw, as.data.frame.list, stringsAsFactors = FALSE)) %>%
   rename(
     `Outcome Metric & Pathogen` = Metric,
     `2019` = yr_2019, `2020` = yr_2020, `2021` = yr_2021, `2022` = yr_2022, `2023` = yr_2023,
     `Annual IRR [95% CI]` = IRR, `p-value` = p
   )
 
-write_csv(final_table2, file.path(out_dir_tab, "Table_2_Longitudinal_Trends_and_IRR.csv"))
-cat("--> Table 2 exported with restored mathematical consistency.\n")
-print(as.data.frame(final_table2))
+write_csv(final_table1, file.path(out_dir_tab, "Table_1_Longitudinal_Trends_and_IRR.csv"))
+cat("--> Table 1 exported with restored mathematical consistency.\n")
+print(as.data.frame(final_table1))
 
 # Consolidated multi-sheet Excel workbook
 wb <- createWorkbook()
-addWorksheet(wb, "Table_2_Consolidated")
-writeData(wb, sheet = 1, x = final_table2)
-saveWorkbook(wb, file.path(out_dir_tab, "Table_2_Consolidated.xlsx"), overwrite = TRUE)
+addWorksheet(wb, "Table_1_Consolidated")
+writeData(wb, sheet = 1, x = final_table1)
+saveWorkbook(wb, file.path(out_dir_tab, "Table_1_Consolidated.xlsx"), overwrite = TRUE)
 
 # ------------------------------------------------------------------------------
 # 4. FIGURE 2 CONSTRUCTION (PANELS 2A, 2B, 2C)
@@ -219,8 +219,8 @@ tableau_annuel_plot <- df_clean %>%
     species_grp            = factor(Taxon_clean, levels = species_order)
   )
 
-# Dynamic 5-year percentage changes (Panel 2A)
-labels_change_2A <- tableau_annuel_plot %>%
+# Dynamic 5-year percentage changes (Panel 4A)
+labels_change_4A <- tableau_annuel_plot %>%
   filter(Year_clean %in% c(2019, 2023)) %>%
   select(Year_clean, species_grp, incidence_noso_1000pd) %>%
   pivot_wider(names_from = Year_clean, values_from = incidence_noso_1000pd, names_prefix = "yr_") %>%
@@ -258,12 +258,12 @@ theme_pub <- function(base_size = 11) {
     )
 }
 
-# --- Panel 2A: Conventional nosocomial acquisitions (> 2 days) ---
-p2A <- ggplot(tableau_annuel_plot, aes(x = Year_clean, y = incidence_noso_1000pd, color = species_grp, group = species_grp)) +
+# --- Panel 4A: Conventional nosocomial acquisitions (> 2 days) ---
+p4A <- ggplot(tableau_annuel_plot, aes(x = Year_clean, y = incidence_noso_1000pd, color = species_grp, group = species_grp)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 3.6, stroke = 1) +
   geom_text(
-    data = labels_change_2A,
+    data = labels_change_4A,
     aes(x = Year + 0.12, y = Rate, label = label_text, color = species_grp),
     hjust = 0, vjust = 0.5, fontface = "bold", size = 3.1, show.legend = FALSE
   ) +
@@ -274,15 +274,15 @@ p2A <- ggplot(tableau_annuel_plot, aes(x = Year_clean, y = incidence_noso_1000pd
     title    = "A  Conventional Surveillance (> 2 Days Post-Admission)",
     subtitle = expression(atop(
       paste("Sustained decline in ", italic("K. pneumoniae"), " and ", italic("E. cloacae"), " complex"),
-      paste("Persistent ", italic("E. coli"), " detection (IRR = 0.792, 95% CI 0.727\u20130.864, p < 0.0001)")
+      paste("Persistent ", italic("E. coli"), " detection (IRR = 1.024, 95% CI 0.836\u20131.255, p = 0.7330)")
     )),
     x = "Year",
     y = "Acquisitions / 1,000 Patient-Days"
   ) +
   theme_pub()
 
-# --- Panel 2B: Genomic transmissions (<= 30-day window) ---
-p2B <- ggplot(tableau_annuel_plot, aes(x = Year_clean, y = incidence_trans_1000pd, color = species_grp, group = species_grp)) +
+# --- Panel 4B: Genomic transmissions (<= 30-day window) ---
+p4B <- ggplot(tableau_annuel_plot, aes(x = Year_clean, y = incidence_trans_1000pd, color = species_grp, group = species_grp)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 3.6, stroke = 1) +
   scale_color_manual(values = species_colors, labels = species_legend_expr, name = "Bacterial Species:") +
@@ -291,21 +291,21 @@ p2B <- ggplot(tableau_annuel_plot, aes(x = Year_clean, y = incidence_trans_1000p
   labs(
     title    = "B  Genomic Resolution (<= 30-Day WGS Clusters)",
     subtitle = expression(atop(
-      paste("Suppression of active ICU outbreaks; absence of ", italic("E. coli"), " transmission"),
-      paste("(IRR = 0.375, 95% CI 0.290\u20130.485, p < 0.0001)")
+      paste("Suppression of active ICU outbreaks; rare ", italic("E. coli"), " cross-transmission"),
+      paste("(IRR = 0.359, 95% CI 0.150\u20130.859, p = 0.0334)")
     )),
     x = "Year",
     y = "Active Cases / 1,000 Patient-Days"
   ) +
   theme_pub()
 
-# --- Panel 2C: Internal negative control (community E. coli importations) ---
+# --- Panel 4C: Internal negative control (community E. coli importations) ---
 df_eco_import <- tableau_annuel_plot %>% filter(species_grp == "Escherichia coli")
 eco_change_pct <- ((df_eco_import$rate_import_1000adm[df_eco_import$Year_clean == 2023] -
                       df_eco_import$rate_import_1000adm[df_eco_import$Year_clean == 2019]) /
                      df_eco_import$rate_import_1000adm[df_eco_import$Year_clean == 2019]) * 100
 
-p2C <- ggplot(df_eco_import, aes(x = Year_clean, y = rate_import_1000adm)) +
+p4C <- ggplot(df_eco_import, aes(x = Year_clean, y = rate_import_1000adm)) +
   geom_line(linewidth = 1.2, color = "#1f78b4") +
   geom_point(size = 3.8, color = "#1f78b4", shape = 21, fill = "white", stroke = 1.8) +
   annotate(
@@ -323,8 +323,8 @@ p2C <- ggplot(df_eco_import, aes(x = Year_clean, y = rate_import_1000adm)) +
   ) +
   theme_pub()
 
-# --- Assembly and export of Figure 2 ---
-fig2_complete <- (p2A | p2B) / p2C +
+# --- Assembly and export of Figure 4 ---
+fig4_complete <- (p4A | p4B) / p4C +
   plot_layout(guides = "collect") &
   theme(
     legend.position   = "bottom",
@@ -336,8 +336,8 @@ fig2_complete <- (p2A | p2B) / p2C +
     legend.background = element_rect(fill = alpha("grey95", 0.5), color = "grey80", linewidth = 0.35)
   )
 
-ggsave(file.path(out_dir_fig, "Figure_2_Longitudinal_Dynamics.pdf"), fig2_complete, width = 13, height = 9.5, dpi = 300)
-ggsave(file.path(out_dir_fig, "Figure_2_Longitudinal_Dynamics.png"), fig2_complete, width = 13, height = 9.5, dpi = 300)
-ggsave(file.path(out_dir_fig, "Figure_2_Longitudinal_Dynamics.tiff"), fig2_complete, width = 13, height = 9.5, dpi = 300, compression = "lzw")
+ggsave(file.path(out_dir_fig, "Figure_4_Longitudinal_Dynamics.pdf"), fig4_complete, width = 13, height = 9.5, dpi = 300)
+ggsave(file.path(out_dir_fig, "Figure_4_Longitudinal_Dynamics.png"), fig4_complete, width = 13, height = 9.5, dpi = 300)
+ggsave(file.path(out_dir_fig, "Figure_4_Longitudinal_Dynamics.tiff"), fig4_complete, width = 13, height = 9.5, dpi = 300, compression = "lzw")
 
-cat(sprintf("\n--> Figure 2 and Table 2 generated successfully in:\n%s\n%s\n", out_dir_fig, out_dir_tab))
+cat(sprintf("\n--> Figure 4 and Table 1 generated successfully in:\n%s\n%s\n", out_dir_fig, out_dir_tab))

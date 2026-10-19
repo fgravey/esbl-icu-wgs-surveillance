@@ -18,7 +18,7 @@
 #                must be stated as such in the manuscript.
 # Input :  data/BLSE_cohort_final_with_transmissions.tsv
 #          (same file, columns and ward definitions as script 09)
-# Output:  output/tables/Supplementary_Table_S5b_Threshold_Validation.csv
+# Output:  output/tables/Supplementary_Table_S2b_Threshold_Validation.csv
 #          console report with exact numbers to paste into the manuscript
 # Run AFTER script 09 (needs only the input TSV, no dependency on 09 output).
 # ==============================================================================
@@ -167,7 +167,7 @@ val_table <- bind_rows(
   tab_C %>% mutate(Analysis = "C. Optimism-corrected AUC")
 )
 
-write_csv(val_table, file.path(out_dir_tab, "Supplementary_Table_S5b_Threshold_Validation.csv"))
+write_csv(val_table, file.path(out_dir_tab, "Supplementary_Table_S2b_Threshold_Validation.csv"))
 
 cat("\n=============================================================\n")
 cat("INTERNAL VALIDATION OF THE TRANSMISSION THRESHOLD\n");
@@ -175,7 +175,7 @@ cat("=============================================================\n\n")
 cat("(A) Bootstrap threshold stability (2000 replicates):\n");   print(as.data.frame(tab_A))
 cat("\n(B) Cross-ward (geographical) validation:\n");            print(as.data.frame(tab_B))
 cat("\n(C) Optimism-corrected AUC (1000 x 50/50 split):\n");     print(as.data.frame(tab_C))
-cat("\n--> Exported: output/tables/Supplementary_Table_S5b_Threshold_Validation.csv\n")
+cat("\n--> Exported: output/tables/Supplementary_Table_S2b_Threshold_Validation.csv\n")
 cat("\nINTERPRETATION GUIDE FOR THE MANUSCRIPT:\n")
 cat("* If Boot_Median_Thr is within +/-0.5 of the observed threshold in BOTH wards\n")
 cat("  -> threshold is stable; report the bootstrap 95% CI in the main text.\n")

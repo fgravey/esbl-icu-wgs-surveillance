@@ -2,15 +2,15 @@
 # Study : Prospective Weekly Genomic Surveillance alerted and controlled
 #         Nosocomial Transmission Chains of ESBL-Producing Enterobacterales
 #         in Intensive Care Units: A 5-Year Longitudinal Study
-# Script: 09_supplementary_table_s5_colonization_pressure_roc.R
+# Script: 09_figure2ab_colonization_pressure_roc.R
 # Purpose: Dynamic computation of ward colonization pressure (CP), stratified
 #          ROC curves with bootstrap-validated AUC, optimal Youden inflection
 #          thresholds, and step-function odds ratios with exact Fisher
-#          fallback (Supplementary Table S5; panels 3A/3B of Figure 3 are
-#          also exported from this stratified analysis).
+#          fallback. The per-ICU logistic models are exported as source data
+#          for Figure 2A/2B (panels also rendered as Figure 2AB).
 # Input :  data/BLSE_cohort_final_with_transmissions.tsv
-# Output:  output/figures/Figure_3AB_ROC_Colonization_Pressure.pdf (.png)
-#          output/tables/Supplementary_Table_S5_Logistic_Models.csv
+# Output:  output/figures/Figure_2AB_ROC_Colonization_Pressure.pdf (.png)
+#          output/tables/Source_Data_Figure_2AB_PerICU_Logistic_Models.csv
 # ==============================================================================
 
 suppressPackageStartupMessages({
@@ -134,7 +134,7 @@ print(as.data.frame(roc_summary_table))
 cat("=======================================================\n\n")
 
 # ------------------------------------------------------------------------------
-# 3. DYNAMIC PLOTTING: FIGURE 3A (ROC) AND FIGURE 3B (ODDS RATIOS)
+# 3. DYNAMIC PLOTTING: FIGURE 2A (ROC) AND FIGURE 2B (ODDS RATIOS)
 # ------------------------------------------------------------------------------
 roc_df_sicu <- tibble(FPR = 1 - res_sicu$roc_obj$specificities,
                       TPR = res_sicu$roc_obj$sensitivities, Unit = "Surgical ICU")
@@ -148,7 +148,7 @@ youden_pts <- tibble(
   Unit = c("Surgical ICU", "Medical ICU")
 )
 
-p3A <- ggplot(roc_curves, aes(x = FPR, y = TPR, color = Unit)) +
+p2A <- ggplot(roc_curves, aes(x = FPR, y = TPR, color = Unit)) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey60") +
   geom_line(linewidth = 1.2) +
   geom_point(data = youden_pts, aes(x = FPR, y = TPR, color = Unit), size = 3.5, shape = 19) +
@@ -173,7 +173,7 @@ p3A <- ggplot(roc_curves, aes(x = FPR, y = TPR, color = Unit)) +
   theme(legend.position = "bottom")
 
 # ------------------------------------------------------------------------------
-# PANEL 3B: STEP-FUNCTION ODDS RATIOS (FINITE AXIS AND Inf HANDLING)
+# PANEL 2B: STEP-FUNCTION ODDS RATIOS (FINITE AXIS AND Inf HANDLING)
 # ------------------------------------------------------------------------------
 df_or_plot <- tibble(
   Param = factor(c(sprintf("Surgical ICU\n(>= %.1f cases/wk)", res_sicu$threshold),
@@ -201,7 +201,7 @@ df_or_plot <- tibble(
 max_val_finite <- max(df_or_plot$Upper_Plot, na.rm = TRUE)
 max_x_axis     <- max(35, ceiling(max_val_finite * 1.25))
 
-p3B <- ggplot(df_or_plot, aes(x = OR, y = Param, color = Color)) +
+p2B <- ggplot(df_or_plot, aes(x = OR, y = Param, color = Color)) +
   geom_vline(xintercept = 1, linetype = "dashed", color = "grey50") +
   geom_errorbarh(aes(xmin = Lower, xmax = Upper_Plot), height = 0.25, linewidth = 0.9) +
   geom_point(size = 3.8, shape = 18) +
@@ -217,15 +217,15 @@ p3B <- ggplot(df_or_plot, aes(x = OR, y = Param, color = Color)) +
   theme_classic(base_size = 10) +
   theme(plot.margin = margin(6, 30, 6, 6))
 
-fig_3AB <- p3A | p3B
+fig_2AB <- p2A | p2B
 
 # ------------------------------------------------------------------------------
 # 4. EXPORT TO STANDARDISED PUBLICATION PATHS
 # ------------------------------------------------------------------------------
-ggsave(file.path(out_dir_fig, "Figure_3AB_ROC_Colonization_Pressure.pdf"), fig_3AB, width = 12, height = 5.2, dpi = 300)
-ggsave(file.path(out_dir_fig, "Figure_3AB_ROC_Colonization_Pressure.png"), fig_3AB, width = 12, height = 5.2, dpi = 300)
+ggsave(file.path(out_dir_fig, "Figure_2AB_ROC_Colonization_Pressure.pdf"), fig_2AB, width = 12, height = 5.2, dpi = 300)
+ggsave(file.path(out_dir_fig, "Figure_2AB_ROC_Colonization_Pressure.png"), fig_2AB, width = 12, height = 5.2, dpi = 300)
 
-write_csv(roc_summary_table, file.path(out_dir_tab, "Supplementary_Table_S5_Logistic_Models.csv"))
+write_csv(roc_summary_table, file.path(out_dir_tab, "Source_Data_Figure_2AB_PerICU_Logistic_Models.csv"))
 
-cat(sprintf("\n--> Figure 3AB exported to: %s\n", out_dir_fig))
-cat(sprintf("--> Supplementary Table S5 exported to: %s\n", out_dir_tab))
+cat(sprintf("\n--> Figure 2AB exported to: %s\n", out_dir_fig))
+cat(sprintf("--> Source data (Figure 2A/2B, per-ICU logistic models) exported to: %s\n", out_dir_tab))

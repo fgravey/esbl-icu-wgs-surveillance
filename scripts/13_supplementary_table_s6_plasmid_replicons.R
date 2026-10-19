@@ -2,14 +2,14 @@
 # Study : Prospective Weekly Genomic Surveillance alerted and controlled
 #         Nosocomial Transmission Chains of ESBL-Producing Enterobacterales
 #         in Intensive Care Units: A 5-Year Longitudinal Study
-# Script: 13_figure_s3_plasmid_architecture.R
-# Purpose: Dynamic analysis of PlasmidFinder replicon profiles and generation
-#          of Supplementary Figure S3 with standardized publication colors,
-#          plus the underlying replicon frequency table (Supplementary Table S3).
+# Script: 13_supplementary_table_s6_plasmid_replicons.R
+# Purpose: Dynamic analysis of PlasmidFinder replicon profiles and computation
+#          of the per-species replicon frequency table (Supplementary Table S6,
+#          plasmid replicons). The legacy Figure S3 rendering was removed.
 # Input :  data/BLSE_cohort_final_with_transmissions.tsv
 #          data/article-blse-plasmidfinder.csv
 # Output:  output/figures/Supplementary_Figure_S3_Plasmid_Architecture.pdf (.png)
-#          output/tables/Supplementary_Table_S3_Plasmids.csv
+#          output/tables/Supplementary_Table_S6_Plasmid_Replicons.csv
 # Author:  Francois Gravey and co-authors (see README.md)
 # ==============================================================================
 
@@ -166,58 +166,10 @@ df_plot <- bind_rows(results_list) %>%
 
 # Export of the underlying data table (Supplementary Table S3)
 write_csv(df_plot %>% select(Species, Replicon, Count, Denominator = N_Total, Percentage),
-          file.path(out_dir_tab, "Supplementary_Table_S3_Plasmids.csv"))
+          file.path(out_dir_tab, "Supplementary_Table_S6_Plasmid_Replicons.csv"))
 
 # ------------------------------------------------------------------------------
-# 5. OFFICIAL THE LANCET MICROBE RENDERING (SUPPLEMENTARY FIGURE S3)
+# 5. EXPORT COMPLETE (LEGACY FIGURE S3 RENDERING REMOVED)
 # ------------------------------------------------------------------------------
-# Harmonized official palette
-species_colors <- c(
-  "Escherichia coli"             = "#1f78b4",
-  "Klebsiella pneumoniae"        = "#e31a1c",
-  "Enterobacter cloacae complex" = "#ff7f00"
-)
 
-p_s3 <- ggplot(df_plot, aes(x = Percentage, y = Replicon, fill = Species)) +
-  geom_col(position = position_dodge(width = 0.8), width = 0.72, color = "black", linewidth = 0.25) +
-  geom_text(
-    aes(label = Label_Text),
-    position = position_dodge(width = 0.8),
-    hjust = -0.15, size = 2.9, fontface = "bold", color = "black"
-  ) +
-  scale_fill_manual(values = species_colors, name = "Bacterial species:") +
-  scale_x_continuous(
-    limits = c(0, 106),
-    breaks = seq(0, 100, by = 20),
-    labels = function(x) paste0(x, "%"),
-    expand = expansion(mult = c(0.01, 0.05))
-  ) +
-  labs(
-    title    = "Supplementary Figure S3. Comparative Plasmid Replicon Architecture Across Species",
-    subtitle = sprintf("In silico PlasmidFinder profiling highlighting the IncF vs. IncHI / Col dichotomy (N = %d isolates)", nrow(df_cohort_clean)),
-    x        = "Isolates harboring replicon (%)",
-    y        = NULL
-  ) +
-  theme_classic(base_size = 11) +
-  theme(
-    plot.title         = element_text(face = "bold", size = rel(1.05), hjust = 0),
-    plot.subtitle      = element_text(size = rel(0.88), color = "grey30", margin = margin(b = 10)),
-    axis.text.y        = element_text(face = "bold", size = rel(0.9), color = "black"),
-    axis.text.x        = element_text(size = rel(0.85), color = "black"),
-    legend.position    = "top",
-    legend.justification = "left",
-    legend.title       = element_text(face = "bold", size = rel(0.9)),
-    legend.text        = element_text(size = rel(0.85)),
-    panel.grid.major.x = element_line(color = "grey90", linewidth = 0.35, linetype = "dashed"),
-    panel.grid.major.y = element_blank(),
-    plot.margin        = margin(10, 25, 10, 10)
-  )
-
-# Vector and high-resolution exports
-ggsave(file.path(out_dir_fig, "Supplementary_Figure_S3_Plasmid_Architecture.pdf"),
-       p_s3, width = 12.0, height = 9.0, dpi = 300)
-ggsave(file.path(out_dir_fig, "Supplementary_Figure_S3_Plasmid_Architecture.png"),
-       p_s3, width = 12.0, height = 9.0, dpi = 300)
-
-cat(sprintf("\n--> Figure S3 successfully generated in: %s\n", out_dir_fig))
-cat(sprintf("--> Table S3 successfully generated in: %s\n", out_dir_tab))
+cat(sprintf("\n--> Supplementary Table S6 (plasmid replicons) exported to: %s\n", out_dir_tab))

@@ -2,13 +2,13 @@
 # Study : Prospective Weekly Genomic Surveillance alerted and controlled
 #         Nosocomial Transmission Chains of ESBL-Producing Enterobacterales
 #         in Intensive Care Units: A 5-Year Longitudinal Study
-# Script: 16_figure4_clinical_trajectories_paradox.R
-# Purpose: Dynamic generation of Figure 4 (The Lancet Microbe):
-#          - 4A: Chronological Carriage-to-Infection Trajectories by Unit
-#          - 4B: Genomic Dissection of the Surgical Paradox (SICU)
-#          - 4C: Clinical Infection Anatomical Breakdown (Text-mining)
+# Script: 16_figure3_clinical_trajectories_paradox.R
+# Purpose: Dynamic generation of Figure 3 (The Lancet Microbe):
+#          - 3A: Chronological Carriage-to-Infection Trajectories by Unit
+#          - 3B: Genomic Dissection of the Surgical Paradox (SICU)
+#          - 3C: Clinical Infection Anatomical Breakdown (Text-mining)
 # Input :  data/BLSE_cohort_final_with_transmissions.tsv
-# Output:  output/figures/Figure_4_Clinical_Trajectories_Paradox.pdf (.png, .tiff)
+# Output:  output/figures/Figure_3_Clinical_Trajectories_Paradox.pdf (.png, .tiff)
 # Author:  Francois Gravey and co-authors (see README.md)
 # ==============================================================================
 
@@ -74,7 +74,7 @@ df_prep <- df %>%
   filter(!is.na(ward_clean))
 
 # ------------------------------------------------------------------------------
-# 1. PANEL 4A: CLINICAL TRAJECTORIES BY UNIT
+# 1. PANEL 3A: CLINICAL TRAJECTORIES BY UNIT
 # ------------------------------------------------------------------------------
 denom_ward <- df_prep %>% count(ward_clean, name = "N_ward_total")
 
@@ -87,7 +87,7 @@ traj_summary <- df_prep %>%
     Unit_Label = sprintf("%s (n = %d)", ward_clean, N_ward_total)
   )
 
-p4A <- ggplot(traj_summary, aes(x = Percentage, y = trajectory, fill = Unit_Label)) +
+p3A <- ggplot(traj_summary, aes(x = Percentage, y = trajectory, fill = Unit_Label)) +
   geom_col(position = position_dodge(width = 0.75), width = 0.65) +
   geom_text(
     aes(label = sprintf("%.1f%% (%d)", Percentage, Count)),
@@ -111,7 +111,7 @@ p4A <- ggplot(traj_summary, aes(x = Percentage, y = trajectory, fill = Unit_Labe
   )
 
 # ------------------------------------------------------------------------------
-# 2. PANEL 4B: GENOMIC DISSECTION OF THE SURGICAL PARADOX (SICU)
+# 2. PANEL 3B: GENOMIC DISSECTION OF THE SURGICAL PARADOX (SICU)
 # ------------------------------------------------------------------------------
 df_sicu_paradox <- df_prep %>%
   filter(ward_clean == "Surgical ICU" & trajectory == "4. Isolated Infection ('Surgical Paradox')")
@@ -138,7 +138,7 @@ paradox_genomics <- df_sicu_paradox %>%
     .groups       = "drop"
   )
 
-df_4B_segments <- paradox_genomics %>%
+df_3B_segments <- paradox_genomics %>%
   pivot_longer(cols = c(Pct_Dom, Pct_Other), names_to = "SegType", values_to = "Pct") %>%
   mutate(
     Species   = factor(Species_clean, levels = c("Klebsiella pneumoniae", "Escherichia coli", "Enterobacter cloacae complex")),
@@ -152,7 +152,7 @@ df_4B_segments <- paradox_genomics %>%
     )
   )
 
-df_4B_labels <- paradox_genomics %>%
+df_3B_labels <- paradox_genomics %>%
   mutate(
     Species = factor(Species_clean, levels = c("Klebsiella pneumoniae", "Escherichia coli", "Enterobacter cloacae complex")),
     Text_Desc = sprintf("Dominant clone: %s (n = %d, %.1f%%)  |  other STs (n = %d)", Dom_ST, N_Dom, (N_Dom/total_sicu_paradox)*100, N_Other)
@@ -164,25 +164,25 @@ species_labels_expr <- c(
   "Klebsiella pneumoniae"        = expression(italic("K. pneumoniae"))
 )
 
-palette_4B <- c(
+palette_3B <- c(
   "Ecc_dom" = "#ff7f00", "Ecc_oth" = "#fdbf6f",
   "Eco_dom" = "#1f78b4", "Eco_oth" = "#a6cee3",
   "Kpn_dom" = "#e31a1c", "Kpn_oth" = "#fb9a99"
 )
 
-p4B <- ggplot() +
-  geom_col(data = df_4B_segments, aes(x = Pct, y = Species, fill = FillGroup), position = "stack", width = 0.50, show.legend = FALSE) +
+p3B <- ggplot() +
+  geom_col(data = df_3B_segments, aes(x = Pct, y = Species, fill = FillGroup), position = "stack", width = 0.50, show.legend = FALSE) +
   geom_text(
-    data = df_4B_labels,
+    data = df_3B_labels,
     aes(x = Pct_Total + 1.2, y = Species, label = sprintf("%.1f%% (n = %d/%d)", Pct_Total, Total_Species, total_sicu_paradox)),
     hjust = 0, vjust = 0.5, fontface = "bold", size = 3.1, color = "black"
   ) +
   geom_text(
-    data = df_4B_labels,
+    data = df_3B_labels,
     aes(x = 0.5, y = as.numeric(Species) + 0.35, label = Text_Desc),
     hjust = 0, fontface = "italic", size = 2.9, color = "grey20"
   ) +
-  scale_fill_manual(values = palette_4B) +
+  scale_fill_manual(values = palette_3B) +
   scale_y_discrete(labels = species_labels_expr, expand = expansion(mult = c(0.15, 0.25))) +
   scale_x_continuous(limits = c(0, 65), breaks = seq(0, 60, 15), labels = function(x) paste0(x, "%")) +
   labs(
@@ -198,7 +198,7 @@ p4B <- ggplot() +
   )
 
 # ------------------------------------------------------------------------------
-# 3. PANEL 4C: ANATOMICAL INFECTION SITES (TEXT MINING)
+# 3. PANEL 3C: ANATOMICAL INFECTION SITES (TEXT MINING)
 # ------------------------------------------------------------------------------
 # NOTE: site classification keywords match French free-text entries of the
 # source database (e.g. "poumon" = lung, "urin" = urinary).
@@ -239,7 +239,7 @@ site_summary <- df_sites %>%
   ) %>%
   filter(!is.na(Site))
 
-p4C <- ggplot(site_summary, aes(x = Pct, y = Site)) +
+p3C <- ggplot(site_summary, aes(x = Pct, y = Site)) +
   geom_col(fill = "#41b6c4", width = 0.58) +
   geom_text(
     aes(label = sprintf("%.1f%% (n = %d)", Pct, N)),
@@ -262,11 +262,11 @@ p4C <- ggplot(site_summary, aes(x = Pct, y = Site)) +
 # ------------------------------------------------------------------------------
 # 4. ASSEMBLY AND EXPORT
 # ------------------------------------------------------------------------------
-fig4_complete <- p4A / (p4B | p4C) +
+fig3_complete <- p3A / (p3B | p3C) +
   plot_layout(heights = c(1, 1.15), widths = c(1, 1))
 
-ggsave(file.path(out_dir_fig, "Figure_4_Clinical_Trajectories_Paradox.pdf"), fig4_complete, width = 13.5, height = 10, dpi = 300)
-ggsave(file.path(out_dir_fig, "Figure_4_Clinical_Trajectories_Paradox.png"), fig4_complete, width = 13.5, height = 10, dpi = 300)
-ggsave(file.path(out_dir_fig, "Figure_4_Clinical_Trajectories_Paradox.tiff"), fig4_complete, width = 13.5, height = 10, dpi = 300, compression = "lzw")
+ggsave(file.path(out_dir_fig, "Figure_3_Clinical_Trajectories_Paradox.pdf"), fig3_complete, width = 13.5, height = 10, dpi = 300)
+ggsave(file.path(out_dir_fig, "Figure_3_Clinical_Trajectories_Paradox.png"), fig3_complete, width = 13.5, height = 10, dpi = 300)
+ggsave(file.path(out_dir_fig, "Figure_3_Clinical_Trajectories_Paradox.tiff"), fig3_complete, width = 13.5, height = 10, dpi = 300, compression = "lzw")
 
-cat("--> Figure 4 successfully regenerated in:", out_dir_fig, "\n")
+cat("--> Figure 3 successfully regenerated in:", out_dir_fig, "\n")

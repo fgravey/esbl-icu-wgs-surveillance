@@ -76,6 +76,14 @@ All figures (PDF/PNG/TIFF) and tables (CSV/XLSX) are written to `output/figures/
 
 The patient-level cohort data supporting the findings cannot be shared publicly because they contain protected health information (French GDPR / RGPD). They are available from the corresponding author upon reasonable academic request. The `data/README.md` file documents the exact expected structure and file names so that authorized researchers can run the full pipeline.
 
+## Note on Supplementary Table S2
+
+Supplementary Table S2 (continuous colonization-pressure logistic models, per-ICU AUCs)
+was produced by an exploratory continuous-dose sensitivity analysis derived from the
+colonization-pressure computation of script 09. The per-ICU binary logistic models
+(source data for Figure 2A/2B) are fully reproducible via `09_figure2ab_colonization_pressure_roc.R`;
+the continuous-dose variant was run ad hoc and is not part of the numbered pipeline.
+
 ## Notes on language and data labels
 
 All code, comments, and console output are in English. The source database, however, contains a small number of French free-text labels (e.g. chronological screening status "avant"/"apres", anatomical infection-site keywords). Where these strings are used for matching, they are kept verbatim — with Unicode escapes (`\u00e8`, …) — and documented in the code, so that the pipeline remains fully reproducible against the original data.
